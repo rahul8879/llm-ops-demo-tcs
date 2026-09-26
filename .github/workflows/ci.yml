@@ -1,0 +1,19 @@
+name: CI Learning
+
+on:
+  push:
+    branches:
+      - ci-learning
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Understand the runner
+        run: |
+          echo "Hello from GitHub Actions"
+          echo "Machine:"
+          uname -a
+          echo "Current directory:"
+          pwd
