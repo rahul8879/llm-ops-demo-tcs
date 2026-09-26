@@ -1,0 +1,36 @@
+name: RAG Application CD
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+            project_id: ${{ vars.GCP_PROJECT_ID }}
+            workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+            service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Verify GCP authentication
+        run: |
+            gcloud auth list
+            gcloud config get-value project
