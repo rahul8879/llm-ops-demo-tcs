@@ -13,7 +13,7 @@ from langchain_core.runnables import RunnablePassthrough
 VECTOR_STORE = None
 RAG_CHAIN = None
 
-
+TEST_MODE = os.getenv("TEST_MODE", "false").lower() == "true"
 
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
@@ -40,14 +40,30 @@ Question:
     return store, chain
 
 
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     global VECTOR_STORE, RAG_CHAIN
+#     if not os.getenv("OPENAI_API_KEY"):
+#         raise RuntimeError("OPENAI_API_KEY is not configured")
+#     VECTOR_STORE, RAG_CHAIN = build_rag()
+#     yield
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global VECTOR_STORE, RAG_CHAIN
-    if not os.getenv("OPENAI_API_KEY"):
-        raise RuntimeError("OPENAI_API_KEY is not configured")
-    VECTOR_STORE, RAG_CHAIN = build_rag()
-    yield
 
+    if TEST_MODE:
+        print("Running in TEST_MODE - skipping RAG initialization")
+        yield
+        return
+
+    if not os.getenv("OPENAI_API_KEY"):
+        raise RuntimeError("OPENAI_API_KEY is not configured.")
+
+    VECTOR_STORE, RAG_CHAIN = build_rag()
+
+    yield
 
 app = FastAPI(title="Production RAG Policy Assistant", version="1.0.0", lifespan=lifespan)
 
@@ -61,9 +77,18 @@ def root():
     return {"service": "Production RAG Policy Assistant", "docs": "/docs", "health": "/health"}
 
 
+# @app.get("/health")
+# def health():
+#     return {"status": "healthy", "rag_ready": RAG_CHAIN is not None}
+
+
 @app.get("/health")
 def health():
-    return {"status": "healthy", "rag_ready": RAG_CHAIN is not None}
+    return {
+        "status": "healthy",
+        "rag_ready": RAG_CHAIN is not None,
+        "test_mode": TEST_MODE,
+    }
 
 
 @app.post("/chat")

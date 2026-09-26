@@ -1,0 +1,67 @@
+name: CI Learning
+
+on:
+  push:
+    branches:
+      - ci-learning
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v7
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Check Python
+        run: |
+          python --version
+          pip --version
+
+      - name: Install dependencies
+        run: |
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+            pip install pytest httpx
+
+      - name: Run tests
+        env:
+            PYTHONPATH: .
+            TEST_MODE: "true"
+        run: |
+            pytest -q
+
+      - name: Build Docker image
+        run: |
+            docker build -t production-rag:ci .
+        # PHASE 9 - To teach ki bhai run kaise karoge
+      - name: Start Docker container
+        run: |
+            docker run -d \
+            --name production-rag-ci \
+            -p 8080:8080 \
+            -e TEST_MODE=true \
+            production-rag:ci
+
+      - name: Health check
+        run: |
+          for i in {1..20}; do
+            if curl --fail http://localhost:8080/health; then
+              echo "Application healthy"
+              exit 0
+            fi
+
+            sleep 1
+          done
+
+          docker logs production-rag-ci
+          exit 1
+
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker rm -f production-rag-ci || true
