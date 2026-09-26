@@ -90,3 +90,34 @@ version 5: Now Validate docker
 - name: Build Docker image
   run: |
     docker build -t production-rag:ci .
+
+
+# VERSION 6 : RUN Install
+ # PHASE 9 - To teach ki bhai run kaise karoge
+      - name: Start Docker container
+        run: |
+            docker run -d \
+            --name production-rag-ci \
+            -p 8080:8080 \
+            -e TEST_MODE=true \
+            production-rag:ci
+
+      - name: Health check
+        run: |
+          for i in {1..20}; do
+            if curl --fail http://localhost:8080/health; then
+              echo "Application healthy"
+              exit 0
+            fi
+
+            sleep 1
+          done
+
+          docker logs production-rag-ci
+          exit 1
+
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker rm -f production-rag-ci || true
