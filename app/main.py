@@ -60,10 +60,17 @@ class ChatRequest(BaseModel):
 def root():
     return {"service": "Production RAG Policy Assistant", "docs": "/docs", "health": "/health"}
 
+# https://github.com/rahul8879/llm-ops-demo-tcs/pull/2
+# export GITHUB_OWNER="rahul8879"
+# export GITHUB_REPO="rahul8879/llm-ops-demo-tcs"
+# (.venv) rahultiwari@Unknown_86:26:a1:8e:77:43 production_rag_gcp_demo % echo $WIF_PROVIDER
+# projects/40610906675/locations/global/workloadIdentityPools/github/providers/github-provider
+# (.venv) rahultiwari@Unknown_86:26:a1:8e:77:43 production_rag_gcp_demo % echo $DEPLOY_SA   
+# github-deployer@jupyter-last-sheet.iam.gserviceaccount.com
 
 @app.get("/health")
 def health():
-    return {"status": "healthy", "rag_ready": RAG_CHAIN is not None}
+    return {"status": "healthy", "rag is working": RAG_CHAIN is not None}
 
 
 @app.post("/chat")
