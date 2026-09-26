@@ -6,14 +6,15 @@ on:
       - ci-learning
 
 jobs:
-  hello:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Understand the runner
+
+      - name: Checkout source code
+        uses: actions/checkout@v7
+
+      - name: Show repository files
         run: |
-          echo "Hello from GitHub Actions"
-          echo "Machine:"
-          uname -a
-          echo "Current directory:"
           pwd
+          ls -la

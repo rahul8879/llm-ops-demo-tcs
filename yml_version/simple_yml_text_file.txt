@@ -1,0 +1,45 @@
+# version 1 ( basic one)
+
+name: CI Learning
+
+on:
+  push:
+    branches:
+      - ci-learning
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Understand the runner
+        run: |
+          echo "Hello from GitHub Actions"
+          echo "Machine:"
+          uname -a
+          echo "Current directory:"
+          pwd
+
+# Version 2 : Give runner our source code
+
+name: CI Learning
+
+on:
+  push:
+    branches:
+      - ci-learning
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout source code
+        uses: actions/checkout@v7
+
+      - name: Show repository files
+        run: |
+          pwd
+          ls -la
+
