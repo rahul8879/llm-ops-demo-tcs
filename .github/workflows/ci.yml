@@ -36,3 +36,7 @@ jobs:
             TEST_MODE: "true"
         run: |
             pytest -q
+
+      - name: Build Docker image
+        run: |
+            docker build -t production-rag:ci .
