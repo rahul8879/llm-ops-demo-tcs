@@ -14,7 +14,12 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v7
 
-      - name: Show repository files
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Check Python
         run: |
-          pwd
-          ls -la
+          python --version
+          pip --version

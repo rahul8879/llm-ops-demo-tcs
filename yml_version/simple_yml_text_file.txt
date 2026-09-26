@@ -43,3 +43,34 @@ jobs:
           pwd
           ls -la
 
+
+
+
+# version 3 : Add Python
+
+name: CI Learning
+
+on:
+  push:
+    branches:
+      - ci-learning
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout source code
+        uses: actions/checkout@v7
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Check Python
+        run: |
+          python --version
+          pip --version
+
