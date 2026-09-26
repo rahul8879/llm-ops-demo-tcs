@@ -33,5 +33,6 @@ jobs:
       - name: Run tests
         env:
             PYTHONPATH: .
+            TEST_MODE: "true"
         run: |
             pytest -q
